@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pod Logs</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body>
+    <h1>Logs for Pod: {{ pod_name }}</h1>
+    
+    <!-- Back button at the top -->
+    <a href="{{ url_for('index') }}">
+        <button>Back</button>
+    </a>
+    <br><br>
+    
+    <pre>
+        {% for line in logs %}
+            {{ line }}
+        {% endfor %}
+    </pre>
+    <br>
+    
+    <!-- Back button at the bottom -->
+    <a href="{{ url_for('index') }}">
+        <button>Back</button>
+    </a>
+</body>
+</html>

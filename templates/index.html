@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kubernetes Pod Logs</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // Retrieve the selected namespace from local storage
+            var selectedNamespace = localStorage.getItem('selectedNamespace');
+            if (selectedNamespace) {
+                $('#namespace').val(selectedNamespace);
+    
+                // Trigger the AJAX request to populate pods dropdown
+                getPods(selectedNamespace);
+            }
+    
+            // Store the selected namespace in local storage when changed
+            $('#namespace').change(function() {
+                var namespace = $(this).val();
+                localStorage.setItem('selectedNamespace', namespace);
+    
+                // Trigger the AJAX request to populate pods dropdown
+                getPods(namespace);
+            });
+    
+            // Retrieve the selected number of lines from local storage
+            var selectedLines = localStorage.getItem('selectedLines');
+            if (selectedLines) {
+                $('#lines').val(selectedLines);
+            }
+    
+            // Store the selected number of lines in local storage when changed
+            $('#lines').change(function() {
+                var lines = $(this).val();
+                localStorage.setItem('selectedLines', lines);
+            });
+    
+            function getPods(namespace) {
+                $.ajax({
+                    url: "/get_pods",
+                    type: "POST",
+                    data: { namespace: namespace },
+                    success: function(data) {
+                        $('#pod_name').empty();
+                        $.each(data, function(index, value) {
+                            $('#pod_name').append('<option value="' + value + '">' + value + '</option>');
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            }
+        });
+    </script>
+    <style>
+        /* Custom CSS styles */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #f5f5f5;
+            text-align: center;
+            padding: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Get Logs of a Kubernetes Pod</h1>
+        <form method="post">
+            <div class="form-group">
+                <label for="namespace">Namespace:</label>
+                <select class="form-control" id="namespace" name="namespace" required>
+                    {% for namespace in namespaces %}
+                        <option value="{{ namespace }}" {% if selected_namespace == namespace %}selected{% endif %}>{{ namespace }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="pod_name">Pod:</label>
+                <select class="form-control" id="pod_name" name="pod_name" required>
+                    {% if pods %}
+                        {% for pod in pods %}
+                            <option value="{{ pod }}">{{ pod }}</option>
+                        {% endfor %}
+                    {% else %}
+                        <option disabled>No pods available</option>
+                    {% endif %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="lines">Lines:</label>
+                <select class="form-control" id="lines" name="lines">
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="250">250</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Get Logs</button>
+        </form>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert alert-danger" role="alert">
+                    <ul>
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+    <!-- Footer -->
+    <div class="footer">
+        <style>
+            .footer {
+                font-size: 15px;
+                color: #666;
+                margin-top: 32px;
+            }
+        </style>
+        <p>Made by [varmoh] - {{ "now"|datetime }}</p>
+    </div>
+    <!-- End of Footer -->
+</body>
+</html>

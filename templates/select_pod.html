@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Pod</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body>
+    <h1>Select a Pod in Namespace: {{ namespace }}</h1>
+    <form method="post">
+        <label for="pod_name">Pod:</label>
+        <select id="pod_name" name="pod_name" required>
+            {% for pod in pods %}
+                <option value="{{ pod }}">{{ pod }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <input type="submit" value="Get Logs">
+    </form>
+    <br>
+    <a href="{{ url_for('index') }}">
+        <button>Back</button>
+    </a>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+</body>
+</html>
