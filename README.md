@@ -12,4 +12,5 @@ The image has been built and setup and further testing inside K8s is needed.
 - Log's to be "followed". Currently it takes certain amount of lines, but need also to have a live follow
 - Cleaner code
 - K8s deployment files.
+- Grep logs
 - ...
