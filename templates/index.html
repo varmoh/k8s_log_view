@@ -8,31 +8,23 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-            // Retrieve the selected namespace from local storage
             var selectedNamespace = localStorage.getItem('selectedNamespace');
             if (selectedNamespace) {
                 $('#namespace').val(selectedNamespace);
-    
-                // Trigger the AJAX request to populate pods dropdown
                 getPods(selectedNamespace);
             }
     
-            // Store the selected namespace in local storage when changed
             $('#namespace').change(function() {
                 var namespace = $(this).val();
                 localStorage.setItem('selectedNamespace', namespace);
-    
-                // Trigger the AJAX request to populate pods dropdown
                 getPods(namespace);
             });
     
-            // Retrieve the selected number of lines from local storage
             var selectedLines = localStorage.getItem('selectedLines');
             if (selectedLines) {
                 $('#lines').val(selectedLines);
             }
     
-            // Store the selected number of lines in local storage when changed
             $('#lines').change(function() {
                 var lines = $(this).val();
                 localStorage.setItem('selectedLines', lines);
@@ -51,13 +43,13 @@
                     },
                     error: function(xhr, status, error) {
                         console.error(xhr.responseText);
+                        alert("Failed to load pods for the selected namespace.");
                     }
                 });
             }
         });
     </script>
     <style>
-        /* Custom CSS styles */
         .footer {
             position: fixed;
             bottom: 0;
@@ -97,9 +89,15 @@
                 <select class="form-control" id="lines" name="lines">
                     <option value="20">20</option>
                     <option value="50">50</option>
-                    <option value="100">100</option>
+                    <option value="100" selected>100</option>  <!-- Default value set to 100 -->
                     <option value="250">250</option>
+                    <option value="500">500</option>
+                    <option value="1000">1000</option>
                 </select>
+            </div>
+            <div class="form-group">
+                <label for="grep">Grep Term:</label>
+                <input type="text" class="form-control" id="grep" name="grep" placeholder="Enter term to grep">
             </div>
             <button type="submit" class="btn btn-primary">Get Logs</button>
         </form>
@@ -115,7 +113,6 @@
             {% endif %}
         {% endwith %}
     </div>
-    <!-- Footer -->
     <div class="footer">
         <style>
             .footer {
@@ -126,6 +123,5 @@
         </style>
         <p>Made by [varmoh] - {{ "now"|datetime }}</p>
     </div>
-    <!-- End of Footer -->
 </body>
 </html>

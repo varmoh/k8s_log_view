@@ -13,6 +13,10 @@
     </a>
     <br><br>
     
+    {% if grep %}
+        <h2>Filtered by: "{{ grep }}"</h2>
+    {% endif %}
+    
     <pre>
         {% for line in logs %}
             {{ line }}
