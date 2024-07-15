@@ -33,8 +33,8 @@ jobs:
     - name: Generate Helm charts
       run: |
         ./scripts/generate-helm-charts.sh  # Your custom script to generate Helm charts
-      env:
-        DOCKER_IMAGE=ghcr.io/${{ github.repository_owner }}/my-app:latest
+        env:
+        DOCKER_IMAGE=ghcr.io/${{ github.repository_owner }}/k8s_log_view:latest
 
     - name: Lint Helm charts
       run: |
