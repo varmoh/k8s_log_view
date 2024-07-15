@@ -1,0 +1,60 @@
+name: Build and Deploy Helm Charts
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and Push Docker Image
+      run: |
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/my-app:latest .
+        docker push ${{ secrets.DOCKER_USERNAME }}/my-app:latest
+
+    - name: Set up Helm
+      uses: azure/setup-helm@v1
+
+    - name: Generate Helm charts
+      run: |
+        ./scripts/generate-helm-charts.sh  # Your custom script to generate Helm charts
+      env:
+        DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/my-app:latest
+
+    - name: Lint Helm charts
+      run: |
+        helm lint ./charts/my-chart
+
+    - name: Validate Kubernetes manifests
+      run: |
+        helm template ./charts/my-chart | kubeval
+
+    - name: Package Helm charts
+      run: |
+        helm package ./charts/my-chart -d ./output
+
+    - name: Publish Helm charts to GitHub Pages
+      run: |
+        helm repo index ./output --url https://<username>.github.io/helm-charts
+        git config user.name 'github-actions'
+        git config user.email 'github-actions@github.com'
+        git add ./output
+        git commit -m 'Publish Helm charts'
+        git push origin gh-pages
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
