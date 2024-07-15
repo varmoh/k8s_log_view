@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - '.env.test' #this trigger is for testing purposes only
 
 jobs:
   build:
@@ -21,7 +23,7 @@ jobs:
 
     - name: Build and Push Docker Image
       run: |
-        IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/my-app:latest
+        IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/k8s_log_view:latest
         docker build -t $IMAGE_NAME .
         docker push $IMAGE_NAME
 
